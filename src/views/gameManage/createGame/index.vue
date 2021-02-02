@@ -50,9 +50,9 @@
     <el-row  style="margin-top:50px;">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <span>2.项目报名与要求</span>
+            <span>2.项目与报名要求</span>
           </div>
-          <el-button icon="el-icon-plus" style="margin: 10px" type="primary">添加</el-button>
+          <el-button icon="el-icon-plus" style="margin: 10px" type="primary" @click="handleCreate">添加</el-button>
           <el-table
             :key="tableKey"
             v-loading="listLoading"
@@ -116,6 +116,54 @@
         </el-upload>
       </el-card>
     </el-row>
+
+    <el-dialog title="组别管理" :visible.sync="dialogFormVisible">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="margin-left:50px;">
+        <el-form-item label="组别:" prop="zb">
+          <el-input placeholder="组别名称" style="width: 150px;margin-right: 20px;"/>
+          <el-select  placeholder="选择年级" clearable  style="width: 150px;margin-right: 20px;">
+            <!--<el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />-->
+          </el-select>
+          至
+          <el-select  placeholder="选择年级" clearable  style="width: 150px;margin-right: 20px;margin-left: 20px;">
+            <!--<el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />-->
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类别:" prop="lb">
+          <el-radio v-model="temp.type" label="1">个人</el-radio>
+          <el-radio v-model="temp.type" label="2">团队</el-radio>
+        </el-form-item>
+        <el-form-item label="项目:" prop="xm">
+          <el-checkbox-group v-model="temp.items">
+            <el-checkbox :label="item" v-for="item in games"></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="性别:" prop="xb">
+          <el-radio v-model="temp.sex" label="1">男</el-radio>
+          <el-radio v-model="temp.sex" label="2">女</el-radio>
+        </el-form-item>
+        <el-form-item label="年龄:" prop="nl">
+          <el-date-picker
+            v-model="temp.age"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="时间下限"
+            end-placeholder="时间上限">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="数量:" prop="sl">
+
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" >
+          确认
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -144,25 +192,57 @@
         } else {
           callback()
         }
-      }
+      };
       return {
         tableKey: 0,
         list: null,
         listLoading:false,
-        demo: {
-          title: ''
+        dialogFormVisible: false,
+        rules: {
+          type: [{ required: true, message: 'type is required', trigger: 'change' }],
+          timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
+          title: [{ required: true, message: 'title is required', trigger: 'blur' }]
         },
-        demoRules: {
-          title: [{ required: true, trigger: 'change', validator: validate }]
+        games:["跆拳道","跆拳道1","跆拳道2","跆拳道3","跆拳道4","跆拳道5","跆拳道","跆拳道1","跆拳道2","跆拳道3","跆拳道4","跆拳道5",],
+        temp: {
+          id: undefined,
+          name: '',
+          grade1: '',
+          grade2: '',
+          type: '1',
+          items: [],
+          sex: '1',
+          age:'',
+          max_people:'',
+          min_people:'',
+          max_item:'',
+          max_school_people:'',
         },
-        articleList: [
-          { title: '基础篇', href: 'https://juejin.im/post/59097cd7a22b9d0065fb61d2' },
-          { title: '登录权限篇', href: 'https://juejin.im/post/591aa14f570c35006961acac' },
-          { title: '实战篇', href: 'https://juejin.im/post/593121aa0ce4630057f70d35' },
-          { title: 'vue-admin-template 篇', href: 'https://juejin.im/post/595b4d776fb9a06bbe7dba56' },
-          { title: 'v4.0 篇', href: 'https://juejin.im/post/5c92ff94f265da6128275a85' },
-          { title: '优雅的使用 icon', href: 'https://juejin.im/post/59bb864b5188257e7a427c09' }
-        ]
+      }
+    },
+    methods:{
+      handleCreate() {
+        this.resetTemp()
+        this.dialogFormVisible = true
+        this.$nextTick(() => {
+          this.$refs['dataForm'].clearValidate()
+        })
+      },
+      resetTemp(){
+        this.temp= {
+          id: undefined,
+          name: '',
+          grade1: '',
+          grade2: '',
+          type: '1',
+          items: [],
+          sex: '1',
+          age:'',
+          max_people:'',
+          min_people:'',
+          max_item:'',
+          max_school_people:'',
+        }
       }
     }
   }
