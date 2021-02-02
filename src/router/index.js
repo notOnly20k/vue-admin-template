@@ -43,18 +43,38 @@ export const constantRoutes = [
     hidden: true
   },
 
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   children: [{
+  //     path: 'dashboard',
+  //     name: 'Dashboard',
+  //     component: () => import('@/views/dashboard/index'),
+  //     meta: { title: 'Dashboard', icon: 'dashboard' }
+  //   }]
+  // },
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
+    redirect: '/gameManage',
+    name: '竞赛管理',
+    meta: { title: '竞赛管理', icon: 'dashboard' },
+    children: [
+      {
+        path: 'gameManage',
+        name: '竞赛管理',
+        component: () => import('@/views/gameManage/index'),
+        meta: { title: '竞赛管理', icon: 'table' }
+      },
+      {
+        path: 'createGame',
+        name: '创建竞赛',
+        component: () => import('@/views/gameManage/createGame'),
+        meta: { title: '创建竞赛', icon: 'table' }
+      }
+    ]
   },
-
   {
     path: '/example',
     component: Layout,
