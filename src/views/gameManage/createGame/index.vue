@@ -17,30 +17,33 @@
         <div class="component-item" style="height:300px;">
           <el-row :gutter="20">
             <el-col :span="6" class="baseInfo-item">竞赛类别：
-              <el-select  placeholder="类型" clearable  style="width: 220px">
-              <!--<el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />-->
-            </el-select></el-col>
-            <el-col :span="6" class="baseInfo-item">竞赛名称：<el-input placeholder="竞赛类别" style="width: 220px;"/></el-col>
+              <el-select  placeholder="类型" v-model="baseData.type" clearable  style="width: 220px">
+              <el-option v-for="item in types" :key="item" :label="item" :value="item" />
+            </el-select>
+            </el-col>
+            <el-col :span="6" class="baseInfo-item">竞赛名称：<el-input v-model="baseData.name" placeholder="竞赛类别" style="width: 220px;"/></el-col>
             <el-col :span="6" class="baseInfo-item">举办时间：
               <el-date-picker
               style="width: 220px"
               class="filter-item"
+              v-model="baseData.time"
               type="datetime"
               placeholder="举办时间">
             </el-date-picker>
             </el-col>
-            <el-col :span="6" class="baseInfo-item">举办地点：<el-input placeholder="竞赛类别" style="width: 220px;"/></el-col>
+            <el-col :span="6" class="baseInfo-item">举办地点：<el-input v-model="baseData.address" placeholder="举办地点" style="width: 220px;"/></el-col>
             <el-col :span="6" class="baseInfo-item">领队会时间：
               <el-date-picker
                 style="width: 220px"
                 class="filter-item"
+                v-model="baseData.leader_time"
                 type="datetime"
                 placeholder="领队会时间">
               </el-date-picker>
             </el-col>
-            <el-col :span="6" class="baseInfo-item">领队会地点：<el-input placeholder="领队会地点" style="width: 220px;"/></el-col>
-            <el-col :span="6" class="baseInfo-item">领队数量：<el-input placeholder="领队数量" style="width: 220px;"/></el-col>
-            <el-col :span="6" class="baseInfo-item">教练数量：<el-input placeholder="教练数量" style="width: 220px;"/></el-col>
+            <el-col :span="6" class="baseInfo-item">领队会地点：<el-input v-model="baseData.leader_address" placeholder="领队会地点" style="width: 220px;"/></el-col>
+            <el-col :span="6" class="baseInfo-item">领队数量：<el-input v-model="baseData.leader_number" placeholder="领队数量" style="width: 220px;"/></el-col>
+            <el-col :span="6" class="baseInfo-item">教练数量：<el-input v-model="baseData.coach_number" placeholder="教练数量" style="width: 220px;"/></el-col>
 
           </el-row>
         </div>
@@ -99,6 +102,7 @@
         <el-input
           style="margin-bottom: 10px"
           type="textarea"
+          v-model="baseData.tips"
           :rows="6"
           placeholder="请输入内容"
           >
@@ -120,13 +124,13 @@
     <el-dialog title="组别管理" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="margin-left:50px;">
         <el-form-item label="组别:" prop="zb">
-          <el-input placeholder="组别名称" style="width: 150px;margin-right: 20px;"/>
-          <el-select  placeholder="选择年级" clearable  style="width: 150px;margin-right: 20px;">
-            <!--<el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />-->
+          <el-input placeholder="组别名称" v-model="temp.name" style="width: 150px;margin-right: 20px;"/>
+          <el-select  placeholder="选择年级" v-model="temp.grade1" clearable  style="width: 150px;margin-right: 20px;">
+            <el-option v-for="item in grades" :key="item" :label="item" :value="item" />
           </el-select>
           至
-          <el-select  placeholder="选择年级" clearable  style="width: 150px;margin-right: 20px;margin-left: 20px;">
-            <!--<el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />-->
+          <el-select  placeholder="选择年级" v-model="temp.grade2" clearable  style="width: 150px;margin-right: 20px;margin-left: 20px;">
+            <el-option v-for="item in grades" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="类别:" prop="lb">
@@ -139,8 +143,10 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="性别:" prop="xb">
-          <el-radio v-model="temp.sex" label="1">男</el-radio>
-          <el-radio v-model="temp.sex" label="2">女</el-radio>
+          <el-checkbox-group v-model="temp.sexs">
+            <el-checkbox label="男" ></el-checkbox>
+            <el-checkbox label="女" ></el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="年龄:" prop="nl">
           <el-date-picker
@@ -153,13 +159,37 @@
         </el-form-item>
         <el-form-item label="数量:" prop="sl">
 
+          <div v-if="temp.type==1">
+          最少<el-input placeholder="" v-model="temp.min_people" style="width:79px;margin: 10px"/>人，
+          最多<el-input v-model="temp.max_people" style="width:79px;margin: 10px"/>人<br>
+          每人限报<el-input v-model="temp.max_item" style="width:79px;margin: 10px"/>项，
+          每项每校限报<el-input v-model="temp.mrmx" style="width:79px;margin: 10px"/>人
+          </div>
+          <template v-if="temp.type==2">
+          各校参赛队最多<el-input v-model="temp.max_team" style="width:79px;margin: 10px"/>队;<br>
+          每队最多<el-input v-model="temp.max_people" style="width:79px;margin: 10px"/>人，
+          最少<el-input v-model="temp.min_people" style="width:79px;margin: 10px"/>人<br>
+            <template v-if="temp.sexs.length==2">
+              男生<el-input v-model="temp.max_man" style="width:79px;margin: 10px" />人，
+              女生<el-input v-model="temp.max_woman" style="width:79px;margin: 10px" />人<br>
+              男生至少<el-input v-model="temp.min_man" style="width:79px;margin: 10px" />人，
+              女生至少<el-input v-model="temp.min_woman" style="width:79px;margin: 10px" />人
+            </template>
+          </template>
+        </el-form-item>
+        <el-form-item label="属性:" prop="sx" v-if="temp.type==2">
+          <el-checkbox-group v-model="temp.attributes">
+            <el-checkbox label="必须参加" ></el-checkbox>
+            <el-checkbox label="可以上升组" ></el-checkbox>
+            <el-checkbox label="可以窜组" ></el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button type="primary" >
+        <el-button type="primary" @click="upload">
           确认
         </el-button>
       </div>
@@ -203,7 +233,21 @@
           timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
           title: [{ required: true, message: 'title is required', trigger: 'blur' }]
         },
-        games:["跆拳道","跆拳道1","跆拳道2","跆拳道3","跆拳道4","跆拳道5","跆拳道","跆拳道1","跆拳道2","跆拳道3","跆拳道4","跆拳道5",],
+        grades:["一年级","二年级","三年级","四年级","五年级","六年级",],
+        games:["乒乓球","跆拳道","100米赛跑","400米赛跑","1000米赛跑","跳高","跳远","200米游泳",],
+        types:["乒乓球","跆拳道","赛跑","跳高","跳远","游泳",],
+        baseData:{
+          type:"",
+          name:"",
+          time:"",
+          address:"",
+          leader_time:"",
+          leader_address:[],
+          leader_number:"",
+          coach_number:"",
+          tips:"",
+          file_url:"",
+        },
         temp: {
           id: undefined,
           name: '',
@@ -216,7 +260,14 @@
           max_people:'',
           min_people:'',
           max_item:'',
-          max_school_people:'',
+          max_team:'',
+          max_man:'',
+          min_man:'',
+          max_woman:'',
+          min_woman:'',
+          mrmx:'',
+          attributes:[],
+          sexs:[],
         },
       }
     },
@@ -227,6 +278,9 @@
         this.$nextTick(() => {
           this.$refs['dataForm'].clearValidate()
         })
+      },
+      upload(){
+        console.log(this.temp)
       },
       resetTemp(){
         this.temp= {
@@ -241,7 +295,14 @@
           max_people:'',
           min_people:'',
           max_item:'',
-          max_school_people:'',
+          max_team:'',
+          max_man:'',
+          min_man:'',
+          max_woman:'',
+          min_woman:'',
+          mrmx:'',
+          attributes:[],
+          sexs:[],
         }
       }
     }
